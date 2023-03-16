@@ -471,7 +471,7 @@ public class Hotel {
 						"WHERE R.hotelID = '%d' AND roomNumber NOT IN(\n" +
 					       		"SELECT roomNumber\n" +
 							"FROM RoomBookings\n" +
-							"WHERE '%d' = hotelID AND bookingDate != '%s');", user_hotel_id,user_hotel_id,  user_date);
+							"WHERE '%d' = hotelID AND bookingDate = '%s');", user_hotel_id,user_hotel_id,  user_date);
 		int row_count = esql.executeQueryAndPrintResult(query);
 	
 	}
