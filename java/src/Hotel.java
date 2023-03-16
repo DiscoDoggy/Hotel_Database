@@ -24,6 +24,7 @@ import java.io.InputStreamReader;
 import java.util.List;
 import java.util.ArrayList;
 import java.lang.Math;
+import java.util.Scanner;
 
 /**
  * This class defines a simple embedded SQL utility class that is designed to
@@ -400,7 +401,32 @@ public class Hotel {
 
 // Rest of the functions definition go in here
 
-   public static void viewHotels(Hotel esql) {}
+   public static void viewHotels(Hotel esql) {
+   	try{
+		system.out.print("\tTo list hotels within 30 units, please enter a latitude: ");
+		Scanner scanner = new Scanner(System.in);
+		double user_latitude = scanner.nextDouble();
+
+		system.out.print("\tPlease enter a longitude: ");
+		double user_longitude = scanner.nextDouble();
+
+		system.out.println(user_latitude +  ", " + user_longitude + "\n");	
+		
+		String query = String.format ("SELECT hotelName\n" +
+						"FROM Hotel\n" +
+						"WHERE calculate_distance('%f', '%f', latitude, longitude) < 30;", user_latitude, user_longitude);	
+	
+	
+	
+	}
+	catch (Exception e){
+		System.err.println(e.getMessage());
+	}
+   
+   }
+
+
+
    public static void viewRooms(Hotel esql) {}
    public static void bookRooms(Hotel esql) {}
    public static void viewRecentBookingsfromCustomer(Hotel esql) {}
