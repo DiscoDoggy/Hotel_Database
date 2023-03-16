@@ -480,7 +480,45 @@ public class Hotel {
 	}
    
    }
-   public static void bookRooms(Hotel esql) {}
+   public static void bookRooms(Hotel esql) {
+   	try{
+		Scanner scanner = new Scanner(System.in);
+
+		System.out.print("\tTo book a room, please first input a hotel ID: ");
+		int user_hotel_id = scanner.nextInt();
+		
+		System.out.print("\tPlease enter a room number: ");
+		int user_room_number = scanner.nextInt();
+
+		System.out.print("\tPlease enter a date you would like to book the room for: ");
+		String user_date = in.readLine();
+
+		if(isValidDate(user_date) == false) {
+			System.out.print("\tInvalid date. Please enter a date in the format MM/dd/yyyy or M/dd/yyyy.");
+			return;
+		}
+
+		String query = String.format("SELECT price\n" +
+						"FROM Rooms\n" +
+						"WHERE "
+				
+				
+				)
+
+
+	
+	}
+   	
+	catch(Exception e) {
+		System.err.println(e.getMessage());
+	}
+
+
+   }
+
+
+
+
    public static void viewRecentBookingsfromCustomer(Hotel esql) {}
    public static void updateRoomInfo(Hotel esql) {}
    public static void viewRecentUpdates(Hotel esql) {}
