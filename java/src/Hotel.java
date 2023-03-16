@@ -25,7 +25,8 @@ import java.util.List;
 import java.util.ArrayList;
 import java.lang.Math;
 import java.util.Scanner;
-
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * This class defines a simple embedded SQL utility class that is designed to
@@ -425,8 +426,58 @@ public class Hotel {
    }
 
 
+   public static boolean isValidDate(String user_input_date){
+   	SimpleDateFormat date_format = new SimpleDateFormat("M/dd/yyyy");
 
-   public static void viewRooms(Hotel esql) {}
+	date_format.setLenient(false);
+
+	try{
+		Date date = format.parse(user_input_date);
+		return true;
+	
+	}
+
+	catch(Exception e) {
+		format.applyPattern("MM/dd/yyyy");
+		
+		try {
+			Date date = format.parse(user_input_date);
+			return true;
+		}
+
+		catch (Exception failed_date) {
+			return false;
+		}
+	}
+   }
+
+
+   public static void viewRooms(Hotel esql) {
+   	try {
+		System.out.print("\tTo browse the available rooms at a hotel, please enter a hotel ID: ");
+		Scanner scanner = new Scanner(System.in);
+		int user_hotel_id = scanner.nextInt();
+
+		System.out.print("\tPlease enter a date to check availability: ");
+		String user_date = in.readLine();
+		
+		if (isValidDate(user_data) == false) {
+			System.out.print("\tInvalid date. Please enter a date in the format MM/dd/yyyy or M/dd/yyyy.");
+			return;
+		}
+
+		String query = String.format("SELECT roomNumber")
+
+
+
+	
+	
+	}
+	catch (e.getMessage()) {
+		System.err.println(e.getMessage());
+	}
+   
+   }
    public static void bookRooms(Hotel esql) {}
    public static void viewRecentBookingsfromCustomer(Hotel esql) {}
    public static void updateRoomInfo(Hotel esql) {}
