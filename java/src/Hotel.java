@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.lang.Math;
 import java.util.Scanner;
 
+
 /**
  * This class defines a simple embedded SQL utility class that is designed to
  * work with PostgreSQL JDBC drivers.
@@ -410,14 +411,11 @@ public class Hotel {
 		System.out.print("\tPlease enter a longitude: ");
 		double user_longitude = scanner.nextDouble();
 
-		System.out.println(user_latitude +  ", " + user_longitude + "\n");	
+		System.out.println("You entered: " + user_latitude +  ", " + user_longitude + "\n");	
 		
-		String query = String.format ("SELECT hotelName\n" +
-						"FROM Hotel\n" +
-						"WHERE calculate_distance('%f', '%f', latitude, longitude) < 30;", user_latitude, user_longitude);
-
-		int rowCount = esql.executeQuery(query);
-		System.out.println("total row(s): " + rowCount + "\n\n");	
+		String query = String.format ("SELECT hotelName FROM Hotel WHERE calculate_distance('%f', '%f', latitude, longitude) < 30;", user_latitude, user_longitude);
+			
+		int row_count = esql.executeQueryAndPrintResult(query);	
 	}
 
 	catch (Exception e){
