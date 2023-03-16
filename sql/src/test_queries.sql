@@ -4,6 +4,7 @@ SELECT hotelName
 FROM Hotel
 WHERE calculate_distance(1.1,50.1,latitude,longitude) < 30;
 
+/*
 --print rooms at a hotel with the hotelID and date as input
 SELECT roomNumber, price, 
 FROM Rooms R, RoomBookings RB
@@ -15,7 +16,15 @@ SELECT roomNumber
 FROM RoomBookings
 WHERE R.hotelID = R.hotelID AND bookingDate NOT userDate; --second hotel id is the user inputted hotel idi
 
+*/
 
+SELECT roomNumber,price
+FROM Rooms R
+WHERE R.hotelID = 1 AND roomNumber NOT IN (
+	SELECT roomNumber
+	FROM RoomBookings
+	WHERE RoomBookings.hotelID = 1 AND bookingDate = '5/12/2015' 
+);
 
 
 
