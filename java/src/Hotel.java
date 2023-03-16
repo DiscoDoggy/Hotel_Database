@@ -431,21 +431,21 @@ public class Hotel {
 
 	date_format.setLenient(false);
 
-	try{
-		Date date = format.parse(user_input_date);
+	try{ //date is valid
+		Date date = date_format.parse(user_input_date);
 		return true;
 	
 	}
 
-	catch(Exception e) {
-		format.applyPattern("MM/dd/yyyy");
+	catch(Exception e) { //date is invalid with M/dd/yyyy format. Retry
+		date_format.applyPattern("MM/dd/yyyy");
 		
-		try {
-			Date date = format.parse(user_input_date);
+		try { //date is valid
+			Date date = date_format.parse(user_input_date);
 			return true;
 		}
 
-		catch (Exception failed_date) {
+		catch (Exception failed_date) { //date is invalid
 			return false;
 		}
 	}
@@ -461,19 +461,21 @@ public class Hotel {
 		System.out.print("\tPlease enter a date to check availability: ");
 		String user_date = in.readLine();
 		
-		if (isValidDate(user_data) == false) {
+		if (isValidDate(user_date) == false) {
 			System.out.print("\tInvalid date. Please enter a date in the format MM/dd/yyyy or M/dd/yyyy.");
 			return;
 		}
 
-		String query = String.format("SELECT roomNumber")
-
-
-
-	
+		String query = String.format("SELECT roomNumber, price\n" +
+						"FROM Rooms R\n" +
+						"WHERE R.hotelID = '%d' AND roomNumber NOT IN(\n" +
+					       		"SELECT roomNumber\n" +
+							"FROM RoomBookings\n" +
+							"WHERE '%d' = hotelID AND bookingDate != '%s');", user_hotel_id,user_hotel_id,  user_date);
+		int row_count = esql.executeQueryAndPrintResult(query);
 	
 	}
-	catch (e.getMessage()) {
+	catch (Exception e) {
 		System.err.println(e.getMessage());
 	}
    
