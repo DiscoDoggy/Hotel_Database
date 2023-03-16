@@ -403,22 +403,23 @@ public class Hotel {
 
    public static void viewHotels(Hotel esql) {
    	try{
-		system.out.print("\tTo list hotels within 30 units, please enter a latitude: ");
+		System.out.print("\tTo list hotels within 30 units, please enter a latitude: ");
 		Scanner scanner = new Scanner(System.in);
 		double user_latitude = scanner.nextDouble();
 
-		system.out.print("\tPlease enter a longitude: ");
+		System.out.print("\tPlease enter a longitude: ");
 		double user_longitude = scanner.nextDouble();
 
-		system.out.println(user_latitude +  ", " + user_longitude + "\n");	
+		System.out.println(user_latitude +  ", " + user_longitude + "\n");	
 		
 		String query = String.format ("SELECT hotelName\n" +
 						"FROM Hotel\n" +
-						"WHERE calculate_distance('%f', '%f', latitude, longitude) < 30;", user_latitude, user_longitude);	
-	
-	
-	
+						"WHERE calculate_distance('%f', '%f', latitude, longitude) < 30;", user_latitude, user_longitude);
+
+		int rowCount = esql.executeQuery(query);
+		System.out.println("total row(s): " + rowCount + "\n\n");	
 	}
+
 	catch (Exception e){
 		System.err.println(e.getMessage());
 	}
