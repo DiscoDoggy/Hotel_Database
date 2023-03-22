@@ -473,7 +473,7 @@ public class Hotel {
 		String user_date = in.readLine();
 		
 		if (isValidDate(user_date) == false) {
-			System.out.print("\tInvalid date. Please enter a date in the format MM/dd/yyyy or M/dd/yyyy.");
+			System.out.print("\tInvalid date. Please enter a date in the format MM/dd/yyyy or M/dd/yyyy.\n");
 			return;
 		}
 
@@ -505,7 +505,7 @@ public class Hotel {
 		String user_date = in.readLine();
 
 		if(isValidDate(user_date) == false) {
-			System.out.print("\tInvalid date. Please enter a date in the format MM/dd/yyyy or M/dd/yyyy.");
+			System.out.print("\tInvalid date. Please enter a date in the format MM/dd/yyyy or M/dd/yyyy.\n");
 			return;
 		}
 
@@ -601,7 +601,7 @@ public class Hotel {
 		esql.executeUpdate(update_room_command);
 		updateChangeLogs(esql, UserID, mgmr_hotel_id, mgmr_room_number);
 
-		int row_cnt = esql.executeQueryAndPrintResult("SELECT * FROM Rooms");
+		int row_cnt = esql.executeQueryAndPrintResult("SELECT * FROM Rooms ORDER BY hotelID ASC, roomNumber ASC");
 		System.out.println("\n\n------------------\n\n");
 		row_cnt = esql.executeQueryAndPrintResult("SELECT * FROM RoomUpdatesLog");
 	}
