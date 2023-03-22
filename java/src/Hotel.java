@@ -27,6 +27,8 @@ import java.lang.Math;
 import java.util.Scanner;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 /**
  * This class defines a simple embedded SQL utility class that is designed to
@@ -564,76 +566,117 @@ public class Hotel {
 
 
    public static void updateRoomInfo(Hotel esql, int UserID) {
-	
-	if(!checkIfManager(esql, UserID)) {
-		System.out.print("\n\nPermission DENIED. Not a manager.\n\n");
-		return;
+	try{
+		if(!checkIfManager(esql, UserID)) {
+			System.out.print("\n\nPermission DENIED. Not a manager.\n\n");
+			return;
+		}
+
+		Scanner scanner = new Scanner(System.in);
+		
+		System.out.print("\tTo update room information, please first input a hotel ID: ");
+		int mgmr_hotel_id = scanner.nextInt();
+
+		if(!checkIfManagesHotel(esql, UserID, mgmr_hotel_id)) {
+			System.out.print("\n\nPermission DENIED. You do not manage this hotel.\n\n");
+		}
+
+		System.out.print("\tPlease enter a room number: ");
+		int mgmr_room_number = scanner.nextInt();
+		
+
+		System.out.print("\tPlease enter a price to set the room to: ");
+		int mgmr_price = scanner.nextInt();
+		
+		System.out.print("\tPlease enter a image URL to set the room to: ");
+		String mgmr_image_url = in.readLine();
+
+		String update_room_command = String.format("UPDATE Rooms\n" +
+							   "SET price = '%d', imageURL = '%s'\n" +
+							   "WHERE hotelID = '%d' AND roomNumber = '%d';", mgmr_price, mgmr_image_url, mgmr_hotel_id, mgmr_room_number);
+
+		esql.executeUpdate(update_room_command);
+		updateChangeLogs(esql, UserID, mgmr_hotel_id, mgmr_room_number);
+
+		int row_cnt = esql.executeQueryAndPrintResult("SELECT * FROM Rooms");
+		System.out.println("\n\n------------------\n\n");
+		row_cnt = esql.executeQueryAndPrintResult("SELECT * FROM RoomUpdatesLog");
 	}
 
-	Scanner scanner = new Scanner(System.in);
-     	
-	System.out.print("\tTo update room information, please first input a hotel ID: ");
-	int mgmr_hotel_id = scanner.nextInt();
-
-	if(!checkIfManagesHotel(esql, UserID, mgmr_hotel_id)) {
-		System.out.print("\n\nPermission DENIED. You do not manage this hotel.\n\n");
+	catch (Exception e) {
+		System.err.println(e.getMessage());
 	}
-
-	System.out.print("\tPlease enter a room number: ");
-	int mgmr_room_number = scanner.nextInt();
-	
-
-	System.out.print("\tPlease enter a price to set the room to: ");
-	int mgmr_price = scanner.nextDouble();
-	
-	System.out.print("\tPlease enter a image URL to set the room to: ");
-	String mgmr_image_url = in.readLine();
-
-	String update_room_command = String.format("UPDATE Rooms\n" +
-						   "SET price = '%.2f', imageURL = '%s'\n" +
-						   "WHERE hotelID = '%d' AND roomNumber = '%d')", mgmr_price, mgmr_image_url, mgmr_hotel_id, mgmr_room_number);
-
-	esql.executeUpdate(update_room_command);
-   
-	
 
    }
 
    public static boolean checkIfManager(Hotel esql, int UserID) {
-   	String query_manager = String.format("SELECT name FROM Users WHERE userID = '%s' AND userType = 'admin'", Integer.toString(UserID));
+   	try{
+		  
+		String query_manager = String.format("SELECT name FROM Users WHERE userID = '%s' AND userType = 'manager' OR userType = 'admin';", Integer.toString(UserID));
 
-	int row_count = esql.executeQuery(query_manager);
+		int row_count = esql.executeQuery(query_manager);
 
-	if(row_count > 0) {
-		return true;
+		if(row_count > 0) {
+			return true;
+		}
+
+		else {
+			return false;
+		}
+
 	}
 
-	else {
+	catch(Exception e) {
+		System.err.println(e.getMessage());
 		return false;
 	}
-
-	return false;
    
    }
 
-   public static boolean checkIfManagesHotel(Hotel esql, int UserID, int hotelID) {
-	String query_hotel_mgmr = String.format("SELECT hotelName FROM Hotel WHERE managerUserID = '%s' AND hotelID = '%d'"), Integer.toString(UserID), hotelID;
-	
-	int row_count = esql.executeQuery(query_hotel_mgmr);
+   public static boolean checkIfManagesHotel(Hotel esql, int managerID, int hotelID) {
+	try{
+	   
+		String query_hotel_mgmr = String.format("SELECT hotelName FROM Hotel WHERE managerUserID = '%s' AND hotelID = '%d';", Integer.toString(managerID), hotelID);
+		
+		int row_count = esql.executeQuery(query_hotel_mgmr);
 
-	if(row_count > 0) {
-		return true;
+		if(row_count > 0) {
+			return true;
+		}
+
+		else {
+			return false;
+		}
 	}
 
-	else {
+	catch(Exception e) {
+		System.err.println(e.getMessage());
 		return false;
 	}
    }
 
+   public static void updateChangeLogs(Hotel esql, int managerID, int hotelID, int roomNumber) {
+   	try{
+		String currentDateAndTime = getCurrTime();
+		String update_log_stmt = String.format ("INSERT INTO RoomUpdatesLog (managerID, hotelID, roomNumber, updatedOn)\n" +
+							"VALUES('%s', '%d', '%d', '%s');", Integer.toString(managerID), hotelID, roomNumber, currentDateAndTime);
+
+		esql.executeUpdate(update_log_stmt);
+	}
+
+	catch (Exception e) {
+		System.err.println(e.getMessage());
+	}
+   }
 
 
+   public static String getCurrTime() {
+   	LocalDateTime currentDateTime = LocalDateTime.now();
+	DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+	String formattedDateTime = currentDateTime.format(dateTimeFormatter);
 
-
+	return formattedDateTime;
+   }
 
    public static void viewRecentUpdates(Hotel esql) {}
    public static void viewBookingHistoryofHotel(Hotel esql) {}
