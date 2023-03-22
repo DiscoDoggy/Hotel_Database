@@ -303,7 +303,7 @@ public class Hotel {
                    case 1: viewHotels(esql); break;
                    case 2: viewRooms(esql); break;
                    case 3: bookRooms(esql, Integer.parseInt(authorisedUser)); break;
-                   case 4: viewRecentBookingsfromCustomer(esql); break;
+                   case 4: viewRecentBookingsfromCustomer(esql, Integer.parseInt(authorisedUser)); break;
                    case 5: updateRoomInfo(esql); break;
                    case 6: viewRecentUpdates(esql); break;
                    case 7: viewBookingHistoryofHotel(esql); break;
@@ -541,7 +541,31 @@ public class Hotel {
 
 
 
-   public static void viewRecentBookingsfromCustomer(Hotel esql) {}
+   public static void viewRecentBookingsfromCustomer(Hotel esql, int UserID) {
+	try {
+		String query = String.format("SELECT RB.hotelID, RB.roomNumber, R.price, RB.bookingDate\n" +
+						"FROM RoomBookings RB\n" +
+						"INNER JOIN Rooms R ON RB.hotelID = R.hotelID AND RB.roomNumber = R.roomNumber\n" +
+						"WHERE RB.customerID = '%d'\n" +
+						"ORDER BY RB.bookingDate DESC LIMIT 5;", UserID);
+		int row_count = esql.executeQueryAndPrintResult(query);
+				
+	
+	
+	}
+
+
+	catch(Exception e) {
+		System.err.println(e.getMessage());
+	}	
+   
+   }
+
+
+
+
+
+
    public static void updateRoomInfo(Hotel esql) {}
    public static void viewRecentUpdates(Hotel esql) {}
    public static void viewBookingHistoryofHotel(Hotel esql) {}
