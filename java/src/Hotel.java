@@ -302,7 +302,7 @@ public class Hotel {
                 switch (readChoice()){
                    case 1: viewHotels(esql); break;
                    case 2: viewRooms(esql); break;
-                   case 3: bookRooms(esql); break;
+                   case 3: bookRooms(esql, Integer.parseInt(authorisedUser)); break;
                    case 4: viewRecentBookingsfromCustomer(esql); break;
                    case 5: updateRoomInfo(esql); break;
                    case 6: viewRecentUpdates(esql); break;
@@ -480,7 +480,7 @@ public class Hotel {
 	}
    
    }
-   public static void bookRooms(Hotel esql) {
+   public static void bookRooms(Hotel esql, int user_id) {
    	try{
 		Scanner scanner = new Scanner(System.in);
 
@@ -500,12 +500,25 @@ public class Hotel {
 
 		String query = String.format("SELECT price\n" +
 						"FROM Rooms\n" +
-						"WHERE "
-				
-				
-				)
+						"WHERE Rooms.HotelID = '%d' AND Rooms.roomNumber = '%d' AND Rooms.roomNumber NOT IN (\n" +
+							"SELECT roomNumber\n" +
+							"FROM RoomBookings\n" +
+							"WHERE hotelID = '%d' AND RoomBookings.roomNumber = '%d' AND bookingDate = '%s');", user_hotel_id, user_room_number, 
+							user_hotel_id, user_room_number, user_date);
 
+		int row_count = esql.executeQueryAndPrintResult(query);
+	
+		if(row_count == 0) {
+			System.out.print("\n\tNo rooms with your specifications found. Please enter an available hotel room for a specific date.\n\n");
+		}
 
+		else {
+			String update_bookings = String.format("INSERT INTO RoomBookings (customerID, hotelID, roomNumber, bookingDate) VALUES('%d', '%d', '%d', '%s');", user_id, user_hotel_id, user_room_number, user_date);
+			esql.executeUpdate(update_bookings);
+
+			//String checking_query = String.format("SELECT * AS HONKY TOWN FROM RoomBookings WHERE bookingID = 1000");
+			//int check_rows = esql.executeQueryAndPrintResult(checking_query);
+		}
 	
 	}
    	
