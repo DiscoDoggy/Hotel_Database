@@ -385,15 +385,24 @@ public class Hotel {
     **/
    public static String LogIn(Hotel esql){
       try{
-         System.out.print("\tEnter userID: ");
-         String userID = in.readLine();
+         System.out.print("\tEnter username ");
+         String user_name = in.readLine();
          System.out.print("\tEnter password: ");
          String password = in.readLine();
 
-         String query = String.format("SELECT * FROM USERS WHERE userID = '%s' AND password = '%s'", userID, password);
+         String query = String.format("SELECT * FROM Users WHERE name = '%s' AND password = '%s'", user_name, password);
          int userNum = esql.executeQuery(query);
-         if (userNum > 0)
+         if (userNum > 0){
+
+		String query_userID = String.format("SELECT userID FROM Users WHERE name = '%s';", user_name);
+		List<List<String>> user_id_list = esql.executeQueryAndReturnResult(query_userID);
+			//System.out.println(user_id_list.size());
+		String userID = user_id_list.get(0).get(0);
+
+		System.out.print("\n\nQUERIED USER ID: " + userID + "\n\n");
+
             return userID;
+	   }
          return null;
       }catch(Exception e){
          System.err.println (e.getMessage ());
