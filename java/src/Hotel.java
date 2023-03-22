@@ -307,7 +307,7 @@ public class Hotel {
                    case 3: bookRooms(esql, Integer.parseInt(authorisedUser)); break;
                    case 4: viewRecentBookingsfromCustomer(esql, Integer.parseInt(authorisedUser)); break;
                    case 5: updateRoomInfo(esql, Integer.parseInt(authorisedUser)); break;
-                   case 6: viewRecentUpdates(esql); break;
+                   case 6: viewRecentUpdates(esql, Integer.parseInt(authorisedUser)); break;
                    case 7: viewBookingHistoryofHotel(esql); break;
                    case 8: viewRegularCustomers(esql); break;
                    case 9: placeRoomRepairRequests(esql); break;
@@ -678,7 +678,38 @@ public class Hotel {
 	return formattedDateTime;
    }
 
-   public static void viewRecentUpdates(Hotel esql) {}
+   public static void viewRecentUpdates(Hotel esql, int managerID) {
+   	try {
+		if(!checkIfManager(esql, managerID)) {
+			System.out.print("\n\nPermission DENIED. Not a manager. \n\n");
+			return;
+		}
+
+		Scanner scanner = new Scanner(System.in);
+		//System.out.print("\tTo view recent updates, please enter the hotel ID of the hotel you manage: ");
+		//int mgmr_hotel_id = scanner.nextInt();
+
+		String query = String.format("SELECT *\n" +
+					     "FROM RoomUpdatesLog\n" +
+					     "WHERE  managerID = '%s'\n" +
+					     "ORDER BY updateNumber DESC LIMIT 5;", Integer.toString(managerID));
+
+		int row_count = esql.executeQueryAndPrintResult(query);
+	
+	}
+
+	catch(Exception e) {
+		System.err.println(e.getMessage());
+	}
+   
+   
+   
+   }
+
+
+
+
+
    public static void viewBookingHistoryofHotel(Hotel esql) {}
    public static void viewRegularCustomers(Hotel esql) {}
    public static void placeRoomRepairRequests(Hotel esql) {}
