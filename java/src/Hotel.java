@@ -567,6 +567,8 @@ public class Hotel {
 
    public static void updateRoomInfo(Hotel esql, int UserID) {
 	try{
+		//System.out.println("\n\nUPDATE ROOM INFO\n\n");
+		//System.out.print("\n\nUSER ID: " + UserID);
 		if(!checkIfManager(esql, UserID)) {
 			System.out.print("\n\nPermission DENIED. Not a manager.\n\n");
 			return;
@@ -579,6 +581,7 @@ public class Hotel {
 
 		if(!checkIfManagesHotel(esql, UserID, mgmr_hotel_id)) {
 			System.out.print("\n\nPermission DENIED. You do not manage this hotel.\n\n");
+			return;
 		}
 
 		System.out.print("\tPlease enter a room number: ");
@@ -611,10 +614,12 @@ public class Hotel {
 
    public static boolean checkIfManager(Hotel esql, int UserID) {
    	try{
-		  
-		String query_manager = String.format("SELECT name FROM Users WHERE userID = '%s' AND userType = 'manager' OR userType = 'admin';", Integer.toString(UserID));
+		//System.out.println("USER ID as int: " + UserID);
+		//System.out.print("UserID as String: " + Integer.toString(UserID) + "\n\n");
+		String query_manager = String.format("SELECT * FROM Users WHERE userID = '%s' AND (userType = 'manager' OR userType = 'admin');", Integer.toString(UserID));
 
-		int row_count = esql.executeQuery(query_manager);
+		int row_count = esql.executeQueryAndPrintResult(query_manager);
+
 
 		if(row_count > 0) {
 			return true;
