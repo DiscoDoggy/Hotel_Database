@@ -307,7 +307,7 @@ public class Hotel {
                    case 3: bookRooms(esql, Integer.parseInt(authorisedUser)); break;
                    case 4: viewRecentBookingsfromCustomer(esql, Integer.parseInt(authorisedUser)); break;
                    case 5: updateRoomInfo(esql, Integer.parseInt(authorisedUser)); break;
-                   case 6: viewRecentUpdates(esql); break;
+                   case 6: viewRecentUpdates(esql, Integer.parseInt(authorisedUser)); break;
                    case 7: viewBookingHistoryofHotel(esql, Integer.parseInt(authorisedUser)); break;
                    case 8: viewRegularCustomers(esql, Integer.parseInt(authorisedUser)); break;
                    case 9: placeRoomRepairRequests(esql, Integer.parseInt(authorisedUser)); break;
@@ -473,7 +473,7 @@ public class Hotel {
 		String user_date = in.readLine();
 		
 		if (isValidDate(user_date) == false) {
-			System.out.print("\tInvalid date. Please enter a date in the format MM/dd/yyyy or M/dd/yyyy.");
+			System.out.print("\tInvalid date. Please enter a date in the format MM/dd/yyyy or M/dd/yyyy.\n");
 			return;
 		}
 
@@ -505,7 +505,7 @@ public class Hotel {
 		String user_date = in.readLine();
 
 		if(isValidDate(user_date) == false) {
-			System.out.print("\tInvalid date. Please enter a date in the format MM/dd/yyyy or M/dd/yyyy.");
+			System.out.print("\tInvalid date. Please enter a date in the format MM/dd/yyyy or M/dd/yyyy.\n");
 			return;
 		}
 
@@ -527,8 +527,8 @@ public class Hotel {
 			String update_bookings = String.format("INSERT INTO RoomBookings (customerID, hotelID, roomNumber, bookingDate) VALUES('%d', '%d', '%d', '%s');", user_id, user_hotel_id, user_room_number, user_date);
 			esql.executeUpdate(update_bookings);
 
-			//String checking_query = String.format("SELECT * AS HONKY TOWN FROM RoomBookings WHERE bookingID = 1000");
-			//int check_rows = esql.executeQueryAndPrintResult(checking_query);
+			String checking_query = String.format("SELECT * FROM RoomBookings");
+			int check_rows = esql.executeQueryAndPrintResult(checking_query);
 		}
 	
 	}
@@ -567,6 +567,8 @@ public class Hotel {
 
    public static void updateRoomInfo(Hotel esql, int UserID) {
 	try{
+		//System.out.println("\n\nUPDATE ROOM INFO\n\n");
+		//System.out.print("\n\nUSER ID: " + UserID);
 		if(!checkIfManager(esql, UserID)) {
 			System.out.print("\n\nPermission DENIED. Not a manager.\n\n");
 			return;
@@ -579,6 +581,7 @@ public class Hotel {
 
 		if(!checkIfManagesHotel(esql, UserID, mgmr_hotel_id)) {
 			System.out.print("\n\nPermission DENIED. You do not manage this hotel.\n\n");
+			return;
 		}
 
 		System.out.print("\tPlease enter a room number: ");
@@ -598,7 +601,7 @@ public class Hotel {
 		esql.executeUpdate(update_room_command);
 		updateChangeLogs(esql, UserID, mgmr_hotel_id, mgmr_room_number);
 
-		int row_cnt = esql.executeQueryAndPrintResult("SELECT * FROM Rooms");
+		int row_cnt = esql.executeQueryAndPrintResult("SELECT * FROM Rooms ORDER BY hotelID ASC, roomNumber ASC");
 		System.out.println("\n\n------------------\n\n");
 		row_cnt = esql.executeQueryAndPrintResult("SELECT * FROM RoomUpdatesLog");
 	}
@@ -611,10 +614,12 @@ public class Hotel {
 
    public static boolean checkIfManager(Hotel esql, int UserID) {
    	try{
-		  
-		String query_manager = String.format("SELECT name FROM Users WHERE userID = '%s' AND (userType = 'manager' OR userType = 'admin');", Integer.toString(UserID));
+		//System.out.println("USER ID as int: " + UserID);
+		//System.out.print("UserID as String: " + Integer.toString(UserID) + "\n\n");
+		String query_manager = String.format("SELECT * FROM Users WHERE userID = '%s' AND (userType = 'manager' OR userType = 'admin');", Integer.toString(UserID));
 
-		int row_count = esql.executeQuery(query_manager);
+		int row_count = esql.executeQueryAndPrintResult(query_manager);
+
 
 		if(row_count > 0) {
 			return true;
@@ -678,7 +683,33 @@ public class Hotel {
 	return formattedDateTime;
    }
 
-   public static void viewRecentUpdates(Hotel esql) {}
+   public static void viewRecentUpdates(Hotel esql, int managerID) {
+   	try {
+		if(!checkIfManager(esql, managerID)) {
+			System.out.print("\n\nPermission DENIED. Not a manager. \n\n");
+			return;
+		}
+
+		Scanner scanner = new Scanner(System.in);
+		//System.out.print("\tTo view recent updates, please enter the hotel ID of the hotel you manage: ");
+		//int mgmr_hotel_id = scanner.nextInt();
+
+		String query = String.format("SELECT *\n" +
+					     "FROM RoomUpdatesLog\n" +
+					     "WHERE  managerID = '%s'\n" +
+					     "ORDER BY updateNumber DESC LIMIT 5;", Integer.toString(managerID));
+
+		int row_count = esql.executeQueryAndPrintResult(query);
+	
+	}
+
+	catch(Exception e) {
+		System.err.println(e.getMessage());
+	}
+   
+   
+   
+   }
    public static void viewBookingHistoryofHotel(Hotel esql, int userID) {
       try {
 	    if(!checkIfManager(esql, userID)){
@@ -734,6 +765,7 @@ public class Hotel {
          System.out.println(e.getMessage());
       }
    }
+	
    public static void viewRegularCustomers(Hotel esql, int userID) {
       try {
 	 if(!checkIfManager(esql, userID)){
