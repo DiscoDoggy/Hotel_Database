@@ -527,8 +527,8 @@ public class Hotel {
 			String update_bookings = String.format("INSERT INTO RoomBookings (customerID, hotelID, roomNumber, bookingDate) VALUES('%d', '%d', '%d', '%s');", user_id, user_hotel_id, user_room_number, user_date);
 			esql.executeUpdate(update_bookings);
 
-			//String checking_query = String.format("SELECT * AS HONKY TOWN FROM RoomBookings WHERE bookingID = 1000");
-			//int check_rows = esql.executeQueryAndPrintResult(checking_query);
+			String checking_query = String.format("SELECT * FROM RoomBookings");
+			int check_rows = esql.executeQueryAndPrintResult(checking_query);
 		}
 	
 	}
